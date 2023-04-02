@@ -1,0 +1,141 @@
+version: '2'
+
+services:
+    redis:
+        container_name: news-parser-redis
+        image: redis:alpine
+        ports:
+            - "6389:6379"
+    php-fpm:
+        container_name: news-parser-php-fpm
+        build:
+            context: .
+            dockerfile: ./docker/php7.4-fpm/Dockerfile
+            args:
+                TIMEZONE: ${TIMEZONE}
+        volumes:
+            - ${SYMFONY_APP_PATH}:/var/www/html
+            - ./logs/symfony:/var/www/html/var/log
+            - ./docker/php7.4-fpm/conf.d/xdebug.ini:/usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini
+            - ./docker/php7.4-fpm/conf.d/error_reporting.ini:/usr/local/etc/php/conf.d/error_reporting.ini
+        links:
+            - redis
+        ports:
+            - "9000"
+        environment:
+            - APP_ENV=dev
+            - ENV_TYPE=symfony
+            - ENABLE_XDEBUG=1
+            - XDEBUG_CONFIG=remote_enable=1 remote_mode=req remote_port=9003 remote_host=host.docker.internal remote_connect_back=0
+            - PHP_IDE_CONFIG=serverName=news-parser.dev
+    np-download-scheduler:
+        container_name: np-download-scheduler
+        build:
+            context: .
+            dockerfile: ./docker/php7.4-fpm/Dockerfile
+        #command: ["cron", "-f"]
+        depends_on:
+            - php-fpm
+            - rabbit
+        volumes:
+            - .:/var/www/html
+        environment:
+            - APP_ENV=dev
+            - ENV_TYPE=symfony
+            - ENABLE_XDEBUG=1
+    process-news:
+        container_name: np-process-news
+        build:
+            context: .
+            dockerfile: ./docker/php7.4-fpm/Dockerfile
+        command: ["php", "/var/www/html/bin/console", "messenger:consume", "newsProcess"]
+        depends_on:
+            - php-fpm
+            - rabbit
+        volumes:
+            - .:/var/www/html
+        environment:
+            - APP_ENV=dev
+            - ENV_TYPE=symfony
+            - ENABLE_XDEBUG=1
+            - PHP_FPM_PHP_INI_OPCACHE_MEMORY_CONSUMPTION=512
+            - PHP_FPM_PHP_ADMIN_VALUE_MEMORY_LIMIT=512M
+            - XDEBUG_CONFIG=remote_enable=1 remote_mode=req remote_port=9003 remote_host=host.docker.internal remote_connect_back=0
+            - PHP_IDE_CONFIG=serverName=news-parser.dev
+    store-news:
+        container_name: np-store-news
+        build:
+            context: .
+            dockerfile: ./docker/php7.4-fpm/Dockerfile
+        command: ["php", "/var/www/html/bin/console", "messenger:consume", "newsStore"]
+        depends_on:
+            - php-fpm
+            - rabbit
+        volumes:
+            - .:/var/www/html
+        environment:
+            - APP_ENV=dev
+            - ENV_TYPE=symfony
+            - ENABLE_XDEBUG=1
+            - PHP_FPM_PHP_INI_OPCACHE_MEMORY_CONSUMPTION=512
+            - PHP_FPM_PHP_ADMIN_VALUE_MEMORY_LIMIT=512M
+            - XDEBUG_CONFIG=remote_enable=1 remote_mode=req remote_port=9003 remote_host=host.docker.internal remote_connect_back=0
+            - PHP_IDE_CONFIG=serverName=news-parser.dev
+
+    nginx:
+        container_name: news-parser-nginx
+        build:
+            context: .
+            dockerfile: ./docker/nginx/Dockerfile
+            args:
+                MAX_EXECUTION_TIME: ${MAX_EXECUTION_TIME}
+                SERVER_NAME: ${SERVER_NAME}
+        ports:
+            - "8081:80"
+        volumes_from:
+            - php-fpm
+        volumes:
+            - ./docker/nginx/conf.d/:/etc/nginx/conf.d
+            - ./docker/nginx/nginx.conf:/etc/nginx/nginx.conf
+            - ./docker/nginx/sites/:/etc/nginx/sites-available
+            - ./:/var/www/html
+            - ./logs/nginx/:/var/log/nginx
+    mysql:
+        container_name: news-parser-mysql
+        image: mysql
+        volumes:
+            - "./.data/mysql:/var/lib/mysql"
+        environment:
+            MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+            MYSQL_DATABASE: ${MYSQL_DATABASE}
+            MYSQL_USER: ${MYSQL_USER}
+            MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+        ports:
+            - "3307:3306"
+    rabbit:
+        container_name: news-parser-rabbitmq
+        image: rabbitmq:3-management
+        environment:
+            RABBITMQ_DEFAULT_USER: ${RABBITMQ_USER}
+            RABBITMQ_DEFAULT_PASS: ${RABBITMQ_PASSWORD}
+        volumes:
+            - ./.data/rabbitmq/:/var/lib/rabbitmq
+        ports:
+            - "5673:5672"
+            - "15673:15672"
+    elk:
+      container_name: news-parser-elk
+      image: sebp/elk
+      volumes:
+          - ./docker/elk/logstash:/etc/logstash
+          - ./docker/elk/logstash/patterns:/opt/logstash/patterns
+          - ./docker/.data/elasticsearch:/var/lib/elasticsearch
+#          - ./elk/elasticsearch:/etc/elasticsearch # to place elastisearch.yml configuration
+      volumes_from:
+          - php-fpm
+          - nginx
+      ports:
+        - "5601:5601"
+        - "9200:9200"
+        - "5044:5044"
+
