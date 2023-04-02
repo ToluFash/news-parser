@@ -5,7 +5,6 @@ Application to ingest news, process and store.
 # How to install dev
 1. Clone repo
 2. Create `.env.local` with your env vars
-3. Update hosts file to have record for 127.0.0.1 news-parser.dev
 
 # How to run
 1. `docker-compose build`
@@ -18,6 +17,7 @@ Application to ingest news, process and store.
     # OR an alternative command
     $ ifconfig docker0 | awk '/inet:/{ print substr($2,6); exit }'
     ```
+5. Update hosts file to have record for `bridge IP address` news-parser.dev
 # Run migrations
 1. `docker-compose run -u root --rm php-fpm bash "-c" "cd /var/www/html && ./bin/console do:mi:mi"`
 2. `docker-compose run -u root --rm php-fpm bash "-c" "cd /var/www/html && yarn install"`
