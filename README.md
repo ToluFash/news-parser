@@ -20,8 +20,6 @@ Application to ingest news, process and store.
 # If database is not created automatically
 1. `docker-compose run -u root --rm php-fpm bash "-c" "cd /var/www/html && ./bin/console doctrine:database:create"`
 
-# How to use
-
 # Creating migrations
 Migrations should <u><b>only</b></u> be executed after a schema change is made to one of the following databases.
 
