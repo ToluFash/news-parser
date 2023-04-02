@@ -12,6 +12,12 @@ Application to ingest news, process and store.
 2. `docker-compose up -d`
 3. `docker-compose run -u root --rm php-fpm bash "-c" "cd /var/www/html && composer install"`
 
+4. Get the bridge IP address
+    ```sh
+    $ docker network inspect bridge | grep Gateway | grep -o -E '[0-9\.]+'
+    # OR an alternative command
+    $ ifconfig docker0 | awk '/inet:/{ print substr($2,6); exit }'
+    ```
 # Run migrations
 1. `docker-compose run -u root --rm php-fpm bash "-c" "cd /var/www/html && ./bin/console do:mi:mi"`
 2. `docker-compose run -u root --rm php-fpm bash "-c" "cd /var/www/html && yarn install"`
