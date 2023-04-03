@@ -30,3 +30,12 @@ Application to ingest news, process and store.
 Migrations should <u><b>only</b></u> be executed after a schema change is made to one of the following databases.
 
 1. `docker-compose run -u root --rm php-fpm bash "-c" "cd /var/www/html && ./bin/console do:mi:di"`
+
+# How to use
+
+1. Goto `http://news-parser.dev`
+
+# Manual Administration
+1. Run `docker-compose run -u root --rm fb-download bash "-c" "cd /var/www/html && ./bin/console app:feed-download"`
+2. Run `docker-compose run -u root --rm process-news bash "-c" "cd /var/www/html && ./bin/console messenger:consume newsProcess"`
+3. Run `docker-compose run -u root --rm store-news bash "-c" "cd /var/www/html && ./bin/console messenger:consume newsStore"`
