@@ -22,7 +22,11 @@ security:
         main:
             lazy: true
             provider: app_user_provider
-            entry_point: App\Security\LoginFormAuthenticator
+            form_login:
+                # "app_login" is the name of the route created previously
+                login_path: app_login
+                enable_csrf: true
+                check_path: app_login
             logout:
                 path: app_logout
                 target: /
@@ -37,7 +41,8 @@ security:
     # Note: Only the *first* access control that matches will be used
     access_control:
         - { path: ^/login, roles: PUBLIC_ACCESS }
-        - { path: ^/news, roles: [ROLE_USER] }
+        - { path: ^/registration, roles: PUBLIC_ACCESS }
+        - { path: ^/, roles: [ROLE_ADMIN, ROLE_MODERATOR] }
 
 when@test:
     security:

@@ -22,6 +22,7 @@ class NewsDownloadAgent
     /**
      * @param MessageBusInterface $bus
      * @param LoggerInterface $logger
+     * @param ParameterBagInterface $parameterBag
      * @param string $apiUrl
      * @param string $apiAccessKey
      */
@@ -39,16 +40,16 @@ class NewsDownloadAgent
         $this->apiAccessKey = $apiAccessKey;
     }
 
-    public  function start(){
+    public function start()
+    {
         $this->logger->info(sprintf('Fetching News @ %s', (new \DateTime())->format(DateTimeInterface::ATOM)));
-        try{
+        try {
             $fetcher = new HTTPFetcher($this->parameterBag);
             $newsFilePath = $fetcher->fetch($this->apiUrl . $this->apiAccessKey);
             $this->bus->dispatch(new NewsProcess($newsFilePath));
             $this->logger->info(sprintf("Download for News @ %s", (new \DateTime())->format(DateTimeInterface::ATOM)));
 
-        }
-        catch (\Throwable $e){
+        } catch (\Throwable $e) {
             $this->logger->error($e->getMessage());
             $this->logger->error(sprintf("Download for News failed @ %s", (new \DateTime())->format(DateTimeInterface::ATOM)));
         }
