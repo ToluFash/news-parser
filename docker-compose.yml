@@ -26,7 +26,6 @@ services:
             - APP_ENV=dev
             - ENV_TYPE=symfony
             - ENABLE_XDEBUG=1
-            - XDEBUG_CONFIG=remote_enable=1 remote_mode=req remote_port=9003 remote_host=host.docker.internal remote_connect_back=0
             - PHP_IDE_CONFIG=serverName=news-parser.dev
     np-download-scheduler:
         container_name: np-download-scheduler
@@ -60,7 +59,6 @@ services:
             - ENABLE_XDEBUG=1
             - PHP_FPM_PHP_INI_OPCACHE_MEMORY_CONSUMPTION=512
             - PHP_FPM_PHP_ADMIN_VALUE_MEMORY_LIMIT=512M
-            - XDEBUG_CONFIG=remote_enable=1 remote_mode=req remote_port=9003 remote_host=host.docker.internal remote_connect_back=0
             - PHP_IDE_CONFIG=serverName=news-parser.dev
     store-news:
         container_name: np-store-news
@@ -79,7 +77,6 @@ services:
             - ENABLE_XDEBUG=1
             - PHP_FPM_PHP_INI_OPCACHE_MEMORY_CONSUMPTION=512
             - PHP_FPM_PHP_ADMIN_VALUE_MEMORY_LIMIT=512M
-            - XDEBUG_CONFIG=remote_enable=1 remote_mode=req remote_port=9003 remote_host=host.docker.internal remote_connect_back=0
             - PHP_IDE_CONFIG=serverName=news-parser.dev
 
     nginx:

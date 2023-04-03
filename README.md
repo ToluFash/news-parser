@@ -20,8 +20,8 @@ Application to ingest news, process and store.
 5. Update hosts file to have record for `bridge IP address` news-parser.dev
 # Run migrations
 1. `docker-compose run -u root --rm php-fpm bash "-c" "cd /var/www/html && ./bin/console do:mi:mi"`
-2. `docker-compose run -u root --rm php-fpm bash "-c" "cd /var/www/html && yarn install"`
-3. `docker-compose run -u root --rm php-fpm bash "-c" "cd /var/www/html && yarn watch"`
+2. `docker-compose run -u root --rm php-fpm bash "-c" "cd /var/www/html && npm install"`
+3. `docker-compose run -u root --rm php-fpm bash "-c" "cd /var/www/html && npm run watch"`
 
 # If database is not created automatically
 1. `docker-compose run -u root --rm php-fpm bash "-c" "cd /var/www/html && ./bin/console doctrine:database:create"`
