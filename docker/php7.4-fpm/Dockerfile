@@ -33,10 +33,10 @@ RUN echo 'alias symfony="php bin/console"' >> ~/.bashrc
 
 RUN chmod 777 /var/www/html
 
-COPY docker/php7.4-fpm/cron.d /etc/cron.d
-RUN chmod 0644 /etc/cron.d/crontab
+COPY docker/php7.4-fpm/crontab /etc/crontab
+RUN chmod 0644 /etc/crontab
 RUN chmod 775 /var/www/html
-RUN crontab /etc/cron.d/crontab
+RUN crontab /etc/crontab
 RUN touch /var/log/crontest.log && chmod 777 /var/log/crontest.log
 
 WORKDIR /var/www/html

@@ -38,6 +38,9 @@ services:
             - rabbit
         volumes:
             - .:/var/www/html
+            - ./logs/symfony:/var/www/html/var/log
+            - ./docker/php7.4-fpm/conf.d/xdebug.ini:/usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini
+            - ./docker/php7.4-fpm/conf.d/error_reporting.ini:/usr/local/etc/php/conf.d/error_reporting.ini
         environment:
             - APP_ENV=dev
             - ENV_TYPE=symfony

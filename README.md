@@ -36,6 +36,6 @@ Migrations should <u><b>only</b></u> be executed after a schema change is made t
 1. Goto `http://news-parser.dev`
 
 # Manual Administration
-1. Run `docker-compose run -u root --rm fb-download bash "-c" "cd /var/www/html && ./bin/console app:feed-download"`
+1. Run `docker-compose run -u root --rm np-download-scheduler bash "-c" "cd /var/www/html && ./bin/console app:feed-download"`
 2. Run `docker-compose run -u root --rm process-news bash "-c" "cd /var/www/html && ./bin/console messenger:consume newsProcess"`
 3. Run `docker-compose run -u root --rm store-news bash "-c" "cd /var/www/html && ./bin/console messenger:consume newsStore"`
